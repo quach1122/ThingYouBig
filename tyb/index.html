@@ -20,9 +20,8 @@
 <body>
 
 <div class="container">
-  <h2>Modal Login Example</h2>
-  <section id="dashboard">
-      
+  <h2>Think You Big</h2>
+  <section id="dashboard" style="max-width:50px;">
   </section>
   <!-- Modal -->
   <div class="modal fade" id="myModal" role="dialog">
@@ -37,19 +36,19 @@
           <form novalidate>
             <div class="form-group">
               <label></span>User 1</label>
-              <input type="text" class="form-control user1">
+              <input type="text" name="user1" class="form-control user1">
             </div>
             <div class="form-group">
               <label></span>User 2</label>
-              <input type="text" class="form-control user2">
+              <input type="text" name="user2" class="form-control user2">
             </div>
             <div class="form-group">
               <label></span>User 3</label>
-              <input type="text" class="form-control user3">
+              <input type="text" name="user3" class="form-control user3">
             </div>
             <div class="form-group">
               <label></span>User 4</label>
-              <input type="text" class="form-control user4">
+              <input type="text" name="user4" class="form-control user4">
             </div>
             <div class="form-group">
               <label></span>Points</label>
@@ -66,17 +65,77 @@
     </div>
   </div> 
 </div>
- 
+ <script type="text/javascript" src="./calculation.js"></script>
 <script>
 $(document).ready(function(){
     $("#myModal").modal();
-    localStorage.setItem("test", 'hi');
-
+    // localStorage.setItem("test", 'hi');
+    let points = 0;
+    let scores = {};
+    const SINGLE = 1,
+        DOUBLE = 2,
+        TRIPLE = 3,
+        QUAD = 4;
     $("#startGame").click(function(e){
         e.preventDefault();
+        const users = [...$("input[name^='user']")];
+        if(!$('.points').val()){
+            return;
+        }
+        points = $('.points').val()
+        users.forEach(data => {
+        const user =`<div class="form-group row user-row">
+                        <label class="col-2 col-form-label">${$(data).val()}</label>
+                        <div class="col-2">
+                            <input class="form-control" type="text">
+                        </div>
+                    </div>`;
+            if($(data).val()){
+                scores[$(data).val()] = 0;
+                $('#dashboard').append(user);
+            }
+        })
+        $('#dashboard').append(`<button type="button" id="calculate" class="btn btn-primary">Calculate</button>`);
         $('#myModal').modal('hide');
-        $('#dashboard').append('<div>'+localStorage.getItem('test')+'</div>');
     });
+    $(document.body).on('click', "#calculate", function(e){
+        const tempUser = {};
+        [...$(".user-row")].forEach(data => {
+            tempUser[$(data).find('label').text()] = $(data).find('input').val();
+        })
+
+        const sortTopToBottom = Object.keys(tempUser).sort(function(a,b){return Number(tempUser[a])-Number(tempUser[b])})
+        console.log(sortTopToBottom);
+        for(var i = 0; i < sortTopToBottom.length; i++){
+            // var t = tempUser[sortTopToBottom[i]];
+            for(var j = i+1; j < sortTopToBottom.length; j++){
+                let userVal = Number(tempUser[sortTopToBottom[j]]) * Number(points);
+                if(i === 0) { // first winner
+                    if(userVal < (7*points)){
+                        scores[sortTopToBottom[i]] += (userVal * SINGLE);
+                        scores[sortTopToBottom[j]] += -(userVal * SINGLE);
+                    }
+                    else if(userVal >= (7*points) && userVal <= (10*points)){
+                        scores[sortTopToBottom[i]] += (userVal * DOUBLE);
+                        scores[sortTopToBottom[j]] += -(userVal * DOUBLE);
+                    }
+                    else if(userVal >= (11*points) && userVal <= (12*points)){
+                        scores[sortTopToBottom[i]] += (userVal * TRIPLE);
+                        scores[sortTopToBottom[j]] += -(userVal * TRIPLE);
+                    }
+                    else if(userVal === (13*points)) {
+                        scores[sortTopToBottom[i]] += (userVal * QUAD);
+                        scores[sortTopToBottom[j]] += -(userVal * QUAD);
+                    }
+                }
+                else {
+                    scores[sortTopToBottom[i]] += (userVal - (Number(tempUser[sortTopToBottom[i]]) * points));
+                    scores[sortTopToBottom[j]] += -(userVal - (Number(tempUser[sortTopToBottom[i]]) * points));
+                }
+            }
+        }
+        console.log('scores',scores);
+    })
 });
 </script>
 
