@@ -15,16 +15,76 @@
   .modal-footer {
       background-color: #f9f9f9;
   }
+  .block {
+    display: block;
+  }
+  .display-score {
+    line-height: 34px;
+  }
+  .container label {
+    font-family: Sans-serif;
+    color: #808080;
+  }
+  #dashboard {
+    display: inline-block;
+
+  }
+  #dashboard .row {
+    margin: 15px 0;
+  }
+  .history-user h1 {
+    margin: 0 20px;
+  }
+  .history-user, #history-dashboard {
+    vertical-align: top;
+    display: inline-block;
+  }
+  .points-cell {
+    text-align: center;
+  }
+  .points-cell span {
+    padding: 0 5px;
+  }
+  .container h2 {
+    display: inline-block;
+    vertical-align: middle;
+  }
+  #resetGame {
+    display: inline-block;
+    vertical-align: text-top;
+  }
   </style>
 </head>
 <body>
-
 <div class="container">
-  <h2>Think You Big</h2>
-  <section id="dashboard" style="max-width:50px;">
+    <div>
+        <h2>Think You Big</h2>    
+        <button type="button" class="btn btn-danger" id="resetGame">Reset</button>
+    </div>
+  <section id="dashboard" style="max-width:230px;">
+  </section>
+  <section id="history-dashboard">
+      
   </section>
   <!-- Modal -->
-  <div class="modal fade" id="myModal" role="dialog">
+  <div class="modal fade" id="modalReset" role="dialog">
+    <div class="modal-dialog modal-sm">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Reset Game</h4>
+        </div>
+        <div class="modal-body">
+          <p>Are you sure?</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" id="resetConfirm">yes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="modalStart" role="dialog">
     <div class="modal-dialog">
     
       <!-- Modal content-->
@@ -68,14 +128,49 @@
  <script type="text/javascript" src="./calculation.js"></script>
 <script>
 $(document).ready(function(){
-    $("#myModal").modal();
-    // localStorage.setItem("test", 'hi');
     let points = 0;
     let scores = {};
+    let listOfUsers = [];
+    let history = [];
     const SINGLE = 1,
         DOUBLE = 2,
         TRIPLE = 3,
         QUAD = 4;
+    const hasLocalStorage = JSON.parse(localStorage.getItem("tyb-data"));
+    
+    if(hasLocalStorage){
+        points = hasLocalStorage.points;
+        listOfUsers = hasLocalStorage.listOfUsers;
+        scores = hasLocalStorage.scores;
+        history = hasLocalStorage.history;
+        console.log(points, listOfUsers, scores);
+               listOfUsers.forEach(data => {
+        const user =`<div class="form-group row user-row">
+                        <label class="col-form-label block">${data}</label>
+                        <div class="col-sm-6" style="padding-left: 0;">
+                            <input class="form-control" type="text">
+                        </div>
+                    </div>`;
+                $('#dashboard').append(user);
+        });
+        listOfUsers.forEach(data => {
+            const historyUser = `<div class="history-user" data-history-name=${data.toUpperCase()}>
+                    <h1>${data.toUpperCase()}</h1>    
+                </div>`
+            $('#history-dashboard').append(historyUser);
+        });
+        for(var i = 0; i < history.length; i++){
+            for(var j = 0; j < listOfUsers.length; j++){
+                const score = `<div class="points-cell"><span>c: ${history[i][listOfUsers[j]].c}</span><span>p: ${history[i][
+                    listOfUsers[j]].p}</span></div>`
+                $("[data-history-name='"+listOfUsers[j]+"']").append(score);
+            }
+        }
+        $('#dashboard').append(`<button type="button" id="calculate" class="btn btn-primary">Calculate</button>`);
+    }
+    else {
+        $("#modalStart").modal();
+    }
     $("#startGame").click(function(e){
         e.preventDefault();
         const users = [...$("input[name^='user']")];
@@ -85,29 +180,52 @@ $(document).ready(function(){
         points = $('.points').val()
         users.forEach(data => {
         const user =`<div class="form-group row user-row">
-                        <label class="col-2 col-form-label">${$(data).val()}</label>
-                        <div class="col-2">
+                        <label class="col-form-label block">${$(data).val().toUpperCase()}</label>
+                        <div class="col-sm-6" style="padding-left: 0;">
                             <input class="form-control" type="text">
                         </div>
                     </div>`;
             if($(data).val()){
-                scores[$(data).val()] = 0;
+                scores[$(data).val().toUpperCase()] = 0;
+                listOfUsers.push($(data).val().toUpperCase());
                 $('#dashboard').append(user);
             }
-        })
+        });
         $('#dashboard').append(`<button type="button" id="calculate" class="btn btn-primary">Calculate</button>`);
-        $('#myModal').modal('hide');
+        users.forEach(data => {
+            const historyUser = `<div class="history-user" data-history-name=${$(data).val().toUpperCase()}>
+                    <h1>${$(data).val().toUpperCase()}</h1>    
+                </div>`
+            if($(data).val()){
+                $('#history-dashboard').append(historyUser);
+            }
+        });
+        $('#modalStart').modal('hide');
     });
+    $("#resetGame").click(function(e){
+        $("#modalReset").modal();
+    });
+    $("#resetConfirm").click(function(e){
+        $('#modalReset').modal('hide');
+        points = 0;
+        scores = {};
+        listOfUsers = [];
+        history = [];
+        $(".history-user").empty();
+        $("#dashboard").empty();
+        localStorage.removeItem("tyb-data");
+        $('#modalStart').modal();
+    })
     $(document.body).on('click', "#calculate", function(e){
-        const tempUser = {};
+        const tempUser = {},
+            tempPoints = {};
+            console.log(e.target);
         [...$(".user-row")].forEach(data => {
             tempUser[$(data).find('label').text()] = $(data).find('input').val();
         })
 
         const sortTopToBottom = Object.keys(tempUser).sort(function(a,b){return Number(tempUser[a])-Number(tempUser[b])})
-        console.log(sortTopToBottom);
         for(var i = 0; i < sortTopToBottom.length; i++){
-            // var t = tempUser[sortTopToBottom[i]];
             for(var j = i+1; j < sortTopToBottom.length; j++){
                 let userVal = Number(tempUser[sortTopToBottom[j]]) * Number(points);
                 if(i === 0) { // first winner
@@ -134,7 +252,24 @@ $(document).ready(function(){
                 }
             }
         }
-        console.log('scores',scores);
+        console.log(tempUser, scores);
+        [...$(".history-user")].forEach(data => {
+            const name = $(data).data("history-name");
+            const score = `<div class="points-cell"><span>c: ${tempUser[name]}</span><span>p: ${scores[name]}</span></div>`
+                $(data).append(score);
+                tempPoints[name] = {
+                        c: tempUser[name],
+                        p: scores[name]
+                };
+        });
+        history.push(tempPoints);
+        localStorage.setItem("tyb-data", JSON.stringify({
+            points,
+            listOfUsers,
+            scores,
+            history
+        }));
+        $('#dashboard input').val("");
     })
 });
 </script>
