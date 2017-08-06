@@ -32,6 +32,7 @@
   }
   #dashboard .row {
     margin: 15px 0;
+    text-align: left;
   }
   .history-user h1 {
     margin: 0 20px;
@@ -48,6 +49,7 @@
   }
   .points-cell {
     text-align: center;
+    font-weight: bold;
   }
   .points-cell span {
     padding: 0 5px;
@@ -69,13 +71,20 @@
   .vert-btm {
     vertical-align: bottom;
   }
+  .is-winner {
+    color: #1cb11c;
+  }
+  #pointsPerCard {
+    color: #66c43b;
+  }
   </style>
 </head>
 <body>
 <div class="container">
     <div>
-        <h2>Think You Big</h2>    
-        <button type="button" class="btn btn-danger" id="resetGame">Reset</button>
+        <h2>Think You Big |</h2>
+        <h2> Points Per Card: <span id="pointsPerCard"></span></h2>    
+        <button type="button" class="btn btn-danger" id="resetGame">Reset Game</button>
     </div>
   <section id="dashboard">
   </section>
@@ -106,28 +115,28 @@
       <!-- Modal content-->
       <div class="modal-content">
         <div class="modal-header" style="padding:35px 50px;">
-         <h4><span class="glyphicon glyphicon-user"></span> Add Users</h4>
+         <h4><span class="glyphicon glyphicon-user"></span> Add Players</h4>
         </div>
         <div class="modal-body" style="padding:40px 50px;">
           <form novalidate>
             <div class="form-group">
-              <label></span>User 1</label>
+              <label></span>Player 1</label>
               <input type="text" name="user1" class="form-control user1">
             </div>
             <div class="form-group">
-              <label></span>User 2</label>
+              <label></span>Player 2</label>
               <input type="text" name="user2" class="form-control user2">
             </div>
             <div class="form-group">
-              <label></span>User 3</label>
+              <label></span>Player 3</label>
               <input type="text" name="user3" class="form-control user3">
             </div>
             <div class="form-group">
-              <label></span>User 4</label>
+              <label></span>Player 4</label>
               <input type="text" name="user4" class="form-control user4">
             </div>
             <div class="form-group">
-              <label></span>Points</label>
+              <label></span>Points Per Card</label>
               <input type="text" class="form-control points">
             </div>
             <button id="startGame" class="btn btn-success btn-block">
@@ -158,8 +167,10 @@ $(document).ready(function(){
         listOfUsers = hasLocalStorage.listOfUsers;
         scores = hasLocalStorage.scores;
         history = hasLocalStorage.history;
-        console.log(points, listOfUsers, scores);
-               listOfUsers.forEach(data => {
+
+        $("#pointsPerCard").html(points);
+
+        listOfUsers.forEach(data => {
         const user =`<div class="form-group row user-row">
                         <label class="col-form-label block">${data}</label>
                         <div class="col-xs-12 col-sm-12" style="padding-left: 0;">
@@ -176,7 +187,8 @@ $(document).ready(function(){
         });
         for(var i = 0; i < history.length; i++){
             for(var j = 0; j < listOfUsers.length; j++){
-                const score = `<div class="points-cell"><span>c: ${history[i][listOfUsers[j]].c}</span><span>p: ${history[i][
+                const isWinner = history[i][listOfUsers[j]].c === "0" ? "is-winner" : '';
+                const score = `<div class="points-cell ${isWinner}"><span>c: ${history[i][listOfUsers[j]].c}</span><span>p: ${history[i][
                     listOfUsers[j]].p}</span></div>`
                 $("[data-history-name='"+listOfUsers[j]+"']").append(score);
             }
@@ -194,7 +206,8 @@ $(document).ready(function(){
         if(!$('.points').val()){
             return;
         }
-        points = $('.points').val()
+        points = $('.points').val();
+        $("#pointsPerCard").html(points);
         users.forEach(data => {
         const user =`<div class="form-group row user-row">
                         <label class="col-form-label block">${$(data).val().toUpperCase()}</label>
@@ -273,8 +286,8 @@ $(document).ready(function(){
         }
         [...$(".history-user")].forEach(data => {
             const name = $(data).data("history-name");
-
-            const score = `<div class="points-cell"><span>c: ${tempUser[name]}</span><span>p: ${scores[name]}</span></div>`
+            const isWinner = tempUser[name] === "0" ? "is-winner" : '';
+            const score = `<div class="points-cell ${isWinner}"><span>c: ${tempUser[name]}</span><span>p: ${scores[name]}</span></div>`
                 $(data).append(score);
                 tempPoints[name] = {
                         c: tempUser[name],
