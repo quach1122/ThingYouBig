@@ -34,6 +34,7 @@
   }
   .history-user h1 {
     margin: 0 20px;
+    font-size: 5vh
   }
   .history-user, #history-dashboard {
     vertical-align: top;
@@ -44,6 +45,7 @@
   }
   .points-cell span {
     padding: 0 5px;
+    font-size: 3vh;
   }
   .container h2 {
     display: inline-block;
@@ -147,7 +149,7 @@ $(document).ready(function(){
                listOfUsers.forEach(data => {
         const user =`<div class="form-group row user-row">
                         <label class="col-form-label block">${data}</label>
-                        <div class="col-6" style="padding-left: 0;">
+                        <div class="col-sm-6" style="padding-left: 0;">
                             <input class="form-control" type="text">
                         </div>
                     </div>`;
@@ -181,7 +183,7 @@ $(document).ready(function(){
         users.forEach(data => {
         const user =`<div class="form-group row user-row">
                         <label class="col-form-label block">${$(data).val().toUpperCase()}</label>
-                        <div class="col-6" style="padding-left: 0;">
+                        <div class="col-sm-6" style="padding-left: 0;">
                             <input class="form-control" type="text">
                         </div>
                     </div>`;
