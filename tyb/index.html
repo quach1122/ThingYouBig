@@ -32,7 +32,6 @@
   }
   #dashboard .row {
     margin: 15px 0;
-    display: inline-block;
   }
   .history-user h1 {
     margin: 0 20px;
@@ -59,6 +58,9 @@
   }
   .container {
     text-align: center;
+  }
+  .container form {
+    text-align: left;
   }
   #resetGame {
     display: inline-block;
@@ -139,7 +141,6 @@
     </div>
   </div> 
 </div>
- <script type="text/javascript" src="./calculation.js"></script>
 <script>
 $(document).ready(function(){
     let points = 0;
@@ -168,9 +169,9 @@ $(document).ready(function(){
                 $('#dashboard').append(user);
         });
         listOfUsers.forEach(data => {
-            const historyUser = `<div class="form-group row"><div class="col-xs-12 col-sm-12" style="padding-left: 0;"><div class="history-user" data-history-name=${data.toUpperCase()}>
+            const historyUser = `<div class="history-user" data-history-name=${data.toUpperCase()}>
                     <h1>${data.toUpperCase()}</h1>    
-                </div></div></div>`
+                </div>`
             $('#history-dashboard').append(historyUser);
         });
         for(var i = 0; i < history.length; i++){
@@ -211,9 +212,9 @@ $(document).ready(function(){
             <button type="button" id="calculate" class="btn btn-primary">Calculate</button>
             </div></div>`);
         users.forEach(data => {
-            const historyUser = `<div class="form-group row"><div class="col-xs-12 col-sm-12" style="padding-left: 0;"><div class="history-user" data-history-name=${$(data).val().toUpperCase()}>
+            const historyUser = `<div class="history-user" data-history-name=${$(data).val().toUpperCase()}>
                     <h1>${$(data).val().toUpperCase()}</h1>    
-                </div></div></div>`
+                </div>`
             if($(data).val()){
                 $('#history-dashboard').append(historyUser);
             }
@@ -270,9 +271,9 @@ $(document).ready(function(){
                 }
             }
         }
-        console.log(tempUser, scores);
         [...$(".history-user")].forEach(data => {
             const name = $(data).data("history-name");
+
             const score = `<div class="points-cell"><span>c: ${tempUser[name]}</span><span>p: ${scores[name]}</span></div>`
                 $(data).append(score);
                 tempPoints[name] = {
