@@ -27,17 +27,24 @@
   }
   #dashboard {
     display: inline-block;
+    white-space: nowrap;
 
   }
   #dashboard .row {
     margin: 15px 0;
+    display: inline-block;
   }
   .history-user h1 {
     margin: 0 20px;
-    font-size: 5vh
   }
   .history-user, #history-dashboard {
     vertical-align: top;
+    display: inline-block;
+  }
+  #history-dashboard {
+    white-space: nowrap;
+  }
+  #history-dashboard > div{
     display: inline-block;
   }
   .points-cell {
@@ -45,15 +52,20 @@
   }
   .points-cell span {
     padding: 0 5px;
-    font-size: 3vh;
   }
   .container h2 {
     display: inline-block;
     vertical-align: middle;
   }
+  .container {
+    text-align: center;
+  }
   #resetGame {
     display: inline-block;
     vertical-align: text-top;
+  }
+  .vert-btm {
+    vertical-align: bottom;
   }
   </style>
 </head>
@@ -63,7 +75,7 @@
         <h2>Think You Big</h2>    
         <button type="button" class="btn btn-danger" id="resetGame">Reset</button>
     </div>
-  <section id="dashboard" style="max-width:230px;">
+  <section id="dashboard">
   </section>
   <section id="history-dashboard">
       
@@ -149,16 +161,16 @@ $(document).ready(function(){
                listOfUsers.forEach(data => {
         const user =`<div class="form-group row user-row">
                         <label class="col-form-label block">${data}</label>
-                        <div class="col-sm-6" style="padding-left: 0;">
+                        <div class="col-xs-12 col-sm-12" style="padding-left: 0;">
                             <input class="form-control" type="text">
                         </div>
                     </div>`;
                 $('#dashboard').append(user);
         });
         listOfUsers.forEach(data => {
-            const historyUser = `<div class="history-user" data-history-name=${data.toUpperCase()}>
+            const historyUser = `<div class="form-group row"><div class="col-xs-12 col-sm-12" style="padding-left: 0;"><div class="history-user" data-history-name=${data.toUpperCase()}>
                     <h1>${data.toUpperCase()}</h1>    
-                </div>`
+                </div></div></div>`
             $('#history-dashboard').append(historyUser);
         });
         for(var i = 0; i < history.length; i++){
@@ -168,7 +180,9 @@ $(document).ready(function(){
                 $("[data-history-name='"+listOfUsers[j]+"']").append(score);
             }
         }
-        $('#dashboard').append(`<button type="button" id="calculate" class="btn btn-primary">Calculate</button>`);
+        $('#dashboard').append(`<div class="form-group row vert-btm"><div class="col-xs-12 col-sm-12" style="padding-left: 0;">
+            <button type="button" id="calculate" class="btn btn-primary">Calculate</button>
+            </div></div>`);
     }
     else {
         $("#modalStart").modal();
@@ -183,7 +197,7 @@ $(document).ready(function(){
         users.forEach(data => {
         const user =`<div class="form-group row user-row">
                         <label class="col-form-label block">${$(data).val().toUpperCase()}</label>
-                        <div class="col-sm-6" style="padding-left: 0;">
+                        <div class="col-xs-12 col-sm-12" style="padding-left: 0;">
                             <input class="form-control" type="text">
                         </div>
                     </div>`;
@@ -193,11 +207,13 @@ $(document).ready(function(){
                 $('#dashboard').append(user);
             }
         });
-        $('#dashboard').append(`<button type="button" id="calculate" class="btn btn-primary">Calculate</button>`);
+        $('#dashboard').append(`<div class="form-group row vert-btm"><div class="col-xs-12 col-sm-12" style="padding-left: 0;">
+            <button type="button" id="calculate" class="btn btn-primary">Calculate</button>
+            </div></div>`);
         users.forEach(data => {
-            const historyUser = `<div class="history-user" data-history-name=${$(data).val().toUpperCase()}>
+            const historyUser = `<div class="form-group row"><div class="col-xs-12 col-sm-12" style="padding-left: 0;"><div class="history-user" data-history-name=${$(data).val().toUpperCase()}>
                     <h1>${$(data).val().toUpperCase()}</h1>    
-                </div>`
+                </div></div></div>`
             if($(data).val()){
                 $('#history-dashboard').append(historyUser);
             }
@@ -213,7 +229,7 @@ $(document).ready(function(){
         scores = {};
         listOfUsers = [];
         history = [];
-        $(".history-user").empty();
+        $("#history-dashboard").empty();
         $("#dashboard").empty();
         localStorage.removeItem("tyb-data");
         $('#modalStart').modal();
