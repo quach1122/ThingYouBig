@@ -77,6 +77,9 @@
   #pointsPerCard {
     color: #66c43b;
   }
+  #gameNumber {
+    color: rgba(244, 53, 53, 0.96);
+  }
   </style>
 </head>
 <body>
@@ -89,7 +92,7 @@
   <section id="dashboard">
   </section>
   <section id="history-dashboard">
-      
+      <h3 id="gameNumber"></h3>
   </section>
   <!-- Modal -->
   <div class="modal fade" id="modalReset" role="dialog">
@@ -196,12 +199,14 @@ $(document).ready(function(){
         $('#dashboard').append(`<div class="form-group row vert-btm"><div class="col-xs-12 col-sm-12" style="padding-left: 0;">
             <button type="button" id="calculate" class="btn btn-primary">Calculate</button>
             </div></div>`);
+        document.getElementById("gameNumber").innerHTML = "Game " + history.length;
     }
     else {
         $("#modalStart").modal();
     }
     $("#startGame").click(function(e){
         e.preventDefault();
+        document.getElementById("gameNumber").innerHTML = "Game 1";
         const users = [...$("input[name^='user']")];
         if(!$('.points').val()){
             return;
@@ -253,7 +258,7 @@ $(document).ready(function(){
             tempPoints = {};
             console.log(e.target);
         [...$(".user-row")].forEach(data => {
-            tempUser[$(data).find('label').text()] = $(data).find('input').val();
+            tempUser[$(data).find('label').text()] = $(data).find('input').val() || "0";
         })
 
         const sortTopToBottom = Object.keys(tempUser).sort(function(a,b){return Number(tempUser[a])-Number(tempUser[b])})
@@ -295,6 +300,7 @@ $(document).ready(function(){
                 };
         });
         history.push(tempPoints);
+        document.getElementById("gameNumber").innerHTML = "Game " + history.length;
         localStorage.setItem("tyb-data", JSON.stringify({
             points,
             listOfUsers,
