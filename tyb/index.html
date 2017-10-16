@@ -273,6 +273,7 @@ $(document).ready(function(){
     $("#viewTotal").click(function(e){
         let lsTotalView = JSON.parse(localStorage.getItem("tyb-total-view"));
         if(!lsTotalView) return;
+        $("#viewTotalModal .modal-body").empty();
         let calculatedTotal = {};
         lsTotalView.forEach(function(obj){
           if(Object.keys(calculatedTotal).length > 0){
